@@ -3,305 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>豪華賭場 Bingo - Gemini 特製版</title>
+    <title>Gemini Casino Pro - 智慧補點版</title>
     <style>
         :root {
             --casino-gold: #f1c40f;
             --casino-dark-gold: #b59410;
             --casino-red: #e74c3c;
-            --casino-dark-red: #c0392b;
             --casino-bg: #1a1a1a;
             --cell-bg: #2c3e50;
             --text-light: #ecf0f1;
-            --gemini-light: #e0f2f1;
             --cell-size: min(17vw, 65px);
         }
 
         body {
-            font-family: 'Georgia', serif;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
             background-color: var(--casino-bg);
             background-image: radial-gradient(circle, #3d0000 0%, #1a1a1a 70%);
             color: var(--text-light);
             display: flex; flex-direction: column; align-items: center;
-            padding: 10px; margin: 0; min-height: 100vh;
+            padding: 10px; margin: 0; min-height: 100vh; overflow-x: hidden;
         }
 
-        .container { width: 100%; max-width: 450px; text-align: center; padding-top: 5px; }
-        
-        /* 標題與 Gemini 識別 */
-        .header-box { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 5px; }
-        h1 { color: var(--casino-gold); text-transform: uppercase; text-shadow: 0 0 15px rgba(241, 196, 15, 0.7); margin: 0; font-size: 1.8em; }
-        .gemini-powered { font-size: 0.8em; color: var(--casino-gold); opacity: 0.8; font-style: italic; white-space: nowrap; }
-        .gemini-logo { width: 20px; height: 20px; fill: var(--casino-gold); }
+        .container { width: 100%; max-width: 450px; text-align: center; }
+        .header { margin: 10px 0; }
+        h1 { color: var(--casino-gold); text-transform: uppercase; text-shadow: 0 0 15px rgba(241, 196, 15, 0.7); margin: 0; font-size: 1.6em; }
+        .subtitle { font-size: 0.75em; color: var(--casino-gold); letter-spacing: 1px; opacity: 0.8; font-weight: bold; }
 
-        /* 設置頁面 */
-        .setup-box { background: rgba(0,0,0,0.7); padding: 25px; border-radius: 20px; border: 2px solid var(--casino-dark-gold); margin-top: 15px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .input-group { position: relative; width: 95%; margin: 0 auto 10px; }
+        /* Setup */
+        .setup-box { background: rgba(0,0,0,0.8); padding: 25px; border-radius: 20px; border: 2px solid var(--casino-dark-gold); margin-top: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
         input { 
             padding: 15px; border-radius: 10px; width: 100%; font-size: 22px; 
             text-align: center; background: #222; color: var(--casino-gold); 
-            border: 1px solid var(--casino-dark-gold); font-weight: bold; letter-spacing: 2px;
-            box-sizing: border-box; transition: 0.3s;
+            border: 1px solid var(--casino-dark-gold); font-weight: bold; box-sizing: border-box;
         }
-        input:focus { outline: none; border-color: white; box-shadow: 0 0 10px var(--casino-gold); }
-        .hint-text { font-size: 0.75em; color: #888; margin-bottom: 20px; }
-        .refresh-btn { margin-bottom: 20px; color: var(--casino-gold); cursor: pointer; font-size: 0.9em; text-decoration: underline; opacity: 0.8; }
+        .refresh-btn { margin: 15px 0; color: var(--casino-gold); cursor: pointer; font-size: 0.9em; text-decoration: underline; }
 
-        button { padding: 15px 30px; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 50px; transition: 0.3s; border: none; text-transform: uppercase; }
-        .primary-btn { background: linear-gradient(145deg, var(--casino-gold), var(--casino-dark-gold)); color: #222; box-shadow: 0 5px 20px rgba(241, 196, 15, 0.4); }
-        .primary-btn:disabled { background: #555; color: #888; box-shadow: none; cursor: not-allowed; opacity: 0.5; }
-        .reset-btn { background: #444; color: #ccc; margin-top: 15px; font-size: 14px; }
+        /* Game Panel */
+        .sync-panel { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #444; }
+        .slot-machine { background: #000; border: 3px solid var(--casino-dark-gold); border-radius: 10px; width: 100px; height: 70px; margin: 10px auto; overflow: hidden; position: relative; }
+        .slot-container { position: absolute; width: 100%; transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+        .slot-num { font-size: 45px; line-height: 70px; font-weight: bold; color: var(--casino-gold); height: 70px; }
 
-        /* 抽號顯示 */
-        .slot-machine { background: black; border: 4px solid var(--casino-dark-gold); border-radius: 15px; width: 130px; height: 90px; margin: 15px auto; overflow: hidden; position: relative; box-shadow: 0 0 20px var(--casino-dark-gold); }
-        .slot-number-container { position: absolute; top: 0; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        .slot-number { font-size: 60px; font-weight: bold; color: var(--casino-gold); height: 90px; line-height: 90px; }
+        /* History */
+        .history-section { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; text-align: left; }
+        .history-row { background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 10px; min-height: 45px; border-left: 4px solid transparent; }
+        .row-start { border-left-color: var(--casino-gold); }
+        .row-round { border-left-color: var(--casino-red); }
+        .history-label { font-size: 0.65em; color: var(--casino-gold); margin-bottom: 4px; font-weight: bold; text-transform: uppercase; }
+        .ball-list { display: flex; flex-wrap: wrap; gap: 6px; }
+        .ball { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; animation: pop 0.3s ease-out; }
+        .ball-start { background: var(--casino-gold); color: #000; box-shadow: 0 0 8px var(--casino-gold); }
+        .ball-round { background: var(--casino-red); color: #fff; box-shadow: 0 0 8px var(--casino-red); }
 
-        .history-mini { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 15px 0; padding: 12px; background: rgba(0,0,0,0.4); border-radius: 15px; min-height: 40px; }
-        .ball { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 15px; animation: popIn 0.3s forwards; }
-        .ball-start { background: linear-gradient(135deg, #f1c40f, #b59410); color: black; border: 1px solid white; }
-        .ball-round { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: 1px solid #ff7675; }
+        /* Grid */
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 10px; background: rgba(0,0,0,0.6); border-radius: 15px; border: 2px solid var(--casino-dark-gold); }
+        .cell { width: var(--cell-size); height: var(--cell-size); background: var(--cell-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: calc(var(--cell-size) * 0.4); font-weight: bold; cursor: not-allowed; color: #444; transition: all 0.3s; border: 1px solid #333; }
+        .cell.suggested { cursor: pointer; color: #fff; border: 2px solid var(--casino-gold); animation: breathe 1.5s infinite; }
+        .cell.hit { background: linear-gradient(145deg, var(--casino-red), #961e12); color: white; border: none; cursor: default; transform: scale(1); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .cell.free { background: #111; color: #aaa; font-size: 10px; cursor: default; }
 
-        /* Bingo 格子 */
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 20px; background: rgba(0,0,0,0.5); padding: 10px; border: 2px solid var(--casino-dark-gold); border-radius: 15px; }
-        .cell { width: var(--cell-size); height: var(--cell-size); background: var(--cell-bg); border: 1px solid #444; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: calc(var(--cell-size) * 0.45); font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
-        .cell.hit { background: linear-gradient(145deg, var(--casino-red), #961e12); border-color: var(--casino-gold); box-shadow: 0 0 10px var(--casino-red); transform: scale(1.05); }
-        .cell.free { background: #111; color: #777; font-size: 10px; border: 1px dashed #555; }
-        
-        /* 聽牌格子的視覺提示 */
-        .cell.ready-cell { border-color: white !important; box-shadow: 0 0 8px white; }
+        /* Status Box */
+        .bingo-status-box { margin-top: 15px; padding: 15px; border-radius: 10px; background: rgba(0,0,0,0.5); border: 1px solid #444; min-height: 60px; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s ease; }
+        .status-text { font-size: 1em; line-height: 1.4; color: #888; text-align: center; }
+        .status-ready { border-color: var(--casino-gold); background: rgba(241, 196, 15, 0.1); }
+        .status-ready .status-text { color: var(--casino-gold); }
+        .status-bingo { border-color: var(--casino-red); background: rgba(231, 76, 60, 0.2); animation: winPulse 1s infinite alternate; }
+        .status-bingo .status-text { color: #fff; }
 
-        #status-bar { margin: 10px 0; padding: 12px; border-radius: 10px; font-weight: bold; background: rgba(0,0,0,0.8); border: 1px solid #333; color: #aaa; transition: 0.3s; }
-        .status-ready { color: #fff; border: 1px solid var(--casino-gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.3); }
-        .status-bingo { color: #fff; background: rgba(231, 76, 60, 0.4); border: 2px solid var(--casino-red); text-shadow: 0 0 10px white; font-size: 1.1em; }
-
-        /* BINGO 連線時的滿版閃爍特效 */
-        #bingo-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(231, 76, 60, 0.3);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000;
-            pointer-events: none; /* 不影響點擊 */
-            animation: bingoFlash 1.5s ease-out;
-        }
-
+        @keyframes breathe { 0% { box-shadow: 0 0 5px var(--casino-gold); transform: scale(1); } 50% { box-shadow: 0 0 15px var(--casino-gold); transform: scale(1.05); } 100% { box-shadow: 0 0 5px var(--casino-gold); transform: scale(1); } }
+        @keyframes winPulse { from { box-shadow: 0 0 5px var(--casino-red); } to { box-shadow: 0 0 20px var(--casino-red); } }
+        @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .shake { animation: shake 0.2s; border-color: var(--casino-red) !important; }
+        .btn-main { padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 50px; border: none; background: linear-gradient(145deg, var(--casino-gold), var(--casino-dark-gold)); cursor: pointer; color: #222; }
+        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
         .hidden { display: none !important; }
-        @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes bingoFlash {
-            0% { background: rgba(241, 196, 15, 0.5); opacity: 0; }
-            20% { background: rgba(241, 196, 15, 0); opacity: 1; }
-            40% { background: rgba(231, 76, 60, 0.5); opacity: 0; }
-            60% { background: rgba(231, 76, 60, 0); opacity: 1; }
-            80% { background: rgba(241, 196, 15, 0.3); opacity: 0; }
-            100% { background: rgba(0,0,0,0); opacity: 0; }
-        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div id="bingo-overlay"></div>
+<div class="container">
+    <div class="header"><h1>Casino Bingo</h1><div class="subtitle">- Smart Sync Pro -</div></div>
 
-        <div class="header-box">
-            <h1>Casino Bingo</h1>
-            <span class="gemini-powered">- powered by Gemini</span>
-            <svg class="gemini-logo" viewBox="0 0 24 24">
-                <path d="M12 2l2.4 7.2L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/>
-            </svg>
-        </div>
-
-        <div id="setup-screen" class="setup-box">
-            <h2 style="color:var(--casino-gold); margin-top:0;">🎲 進入同步房間</h2>
-            <p style="color:#aaa; font-size: 0.9em; margin-bottom: 20px;">請輸入與好友相同的英數代碼</p>
-            
-            <div class="input-group">
-                <input type="text" id="room-code" placeholder="代碼..." maxlength="12" oninput="validateInput()">
-            </div>
-            <div class="hint-text" id="len-hint">請輸入 5-12 位代碼</div>
-            <div class="refresh-btn" onclick="generateRandomCode()">🔄 隨機生成安全代碼</div>
-
-            <button id="join-btn" class="primary-btn" onclick="joinGame()" disabled>✨ 開始遊戲</button>
-        </div>
-
-        <div id="game-screen" class="hidden">
-            <div id="sync-draw-panel">
-                <div id="room-display" style="color:#666; font-size: 0.8em; margin-bottom: 5px;"></div>
-                <div id="round-info" style="color:var(--casino-gold); font-size: 0.95em; font-style: italic;">等待同步開局...</div>
-                <div class="slot-machine">
-                    <div class="slot-number-container" id="slot-container">
-                        <div class="slot-number">?</div>
-                    </div>
-                </div>
-                <button id="draw-btn" class="primary-btn" onclick="handleDrawClick()">🚀 啟動同步開局 (4-6球)</button>
-            </div>
-
-            <div class="history-mini" id="history-box"></div>
-            <div class="grid" id="bingo-grid"></div>
-            <div id="status-bar">點擊號碼標記</div>
-            <button class="reset-btn" onclick="location.reload()">🚪 離開房間</button>
-        </div>
+    <div id="setup-screen" class="setup-box">
+        <input type="text" id="seed-input" placeholder="房間代碼..." maxlength="8" oninput="validateInput()">
+        <div id="len-hint" style="font-size: 0.75em; color: #888; margin-top: 10px;">請輸入 4-8 位英數代碼</div>
+        <div class="refresh-btn" onclick="generateRandomSeed()">🔄 隨機生成</div>
+        <button id="join-btn" class="btn-main" onclick="initGame()" disabled>✨ 進入同步房間</button>
     </div>
 
-    <script>
-        const codeInput = document.getElementById('room-code');
-        const joinBtn = document.getElementById('join-btn');
-        const hint = document.getElementById('len-hint');
-        const bingoOverlay = document.getElementById('bingo-overlay');
+    <div id="game-screen" class="hidden">
+        <div class="sync-panel">
+            <div id="round-info" style="font-size: 0.8em; margin-bottom:5px; color:#aaa;">準備就緒</div>
+            <div class="slot-machine"><div class="slot-container" id="slot-ctrl"><div class="slot-num">?</div></div></div>
+            <button id="draw-btn" class="btn-main" onclick="handleDraw()">🚀 抽取下一個號碼</button>
+        </div>
 
-        // 限制與驗證輸入
-        function validateInput() {
-            let val = codeInput.value.toLowerCase().replace(/[^a-z0-9]/g, '');
-            codeInput.value = val;
-            if (val.length >= 5 && val.length <= 12) {
-                joinBtn.disabled = false;
-                hint.style.color = '#2ecc71'; hint.innerText = '代碼長度合格 ✅';
-            } else {
-                joinBtn.disabled = true;
-                hint.style.color = '#e74c3c'; hint.innerText = val.length < 5 ? `還差 ${5 - val.length} 個字元...` : '代碼太長了！';
+        <div class="history-section">
+            <div class="history-row row-start"><div class="history-label">● 初始同步 (Start)</div><div class="ball-list" id="list-start"></div></div>
+            <div class="history-row row-round"><div class="history-label">● 正式回合 (Rounds)</div><div class="ball-list" id="list-round"></div></div>
+        </div>
+
+        <div class="grid" id="bingo-grid"></div>
+        <div class="bingo-status-box" id="status-box"><div class="status-text" id="status-text">等待開局中...</div></div>
+        <button style="background:none; border:none; color:#666; text-decoration:underline; cursor:pointer; margin:25px 0;" onclick="location.reload()">🚪 離開房間</button>
+    </div>
+</div>
+
+<script>
+    function seedRandom(s) { return function() { s = Math.imul(s ^ s >>> 15, s | 1); s ^= s + Math.imul(s ^ s >>> 7, s | 61); return ((s ^ s >>> 14) >>> 0) / 4294967296; }; }
+    let myPrng, syncPool = [], drawnNumbers = new Set();
+    let gameState = 'init', roundCount = 0, startBallsNum = 0;
+
+    function validateInput() {
+        const input = document.getElementById('seed-input');
+        const btn = document.getElementById('join-btn');
+        let val = input.value.toLowerCase().replace(/[^a-z0-9]/g, '');
+        input.value = val;
+        btn.disabled = !(val.length >= 4 && val.length <= 8);
+    }
+
+    function generateRandomSeed() {
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let res = ''; const len = Math.floor(Math.random() * 5) + 4;
+        for(let i=0; i<len; i++) res += chars[Math.floor(Math.random()*chars.length)];
+        document.getElementById('seed-input').value = res; validateInput();
+    }
+
+    function initGame() {
+        const code = document.getElementById('seed-input').value;
+        let seed = 5381; for (let i = 0; i < code.length; i++) seed = ((seed << 5) + seed) + code.charCodeAt(i);
+        myPrng = seedRandom(seed); syncPool = Array.from({length: 25}, (_, i) => i + 1);
+        startBallsNum = Math.floor(myPrng() * 3) + 4;
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        createGrid();
+    }
+
+    function createGrid() {
+        const grid = document.getElementById('bingo-grid');
+        let nums = Array.from({length: 25}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+        grid.innerHTML = '';
+        for(let i=0; i<25; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            if(i === 12) { cell.innerText = 'FREE'; cell.classList.add('hit', 'free'); cell.dataset.val = "0"; } 
+            else { const n = nums.pop(); cell.innerText = n; cell.id = `cell-${n}`; cell.dataset.val = n; cell.onclick = () => attemptHit(n); }
+            grid.appendChild(cell);
+        }
+        updateBingoStatus();
+    }
+
+    // --- 關鍵邏輯：自動補點檢查 ---
+    function autoHitPrevious() {
+        // 找出所有正在閃爍（suggested）但還沒變紅（hit）的格子，強制變紅
+        const suggestedCells = document.querySelectorAll('.cell.suggested');
+        suggestedCells.forEach(cell => {
+            cell.classList.remove('suggested');
+            cell.classList.add('hit');
+        });
+        updateBingoStatus();
+    }
+
+    async function handleDraw() {
+        // 1. 抽取新號碼前，先把舊的「補點」點亮
+        autoHitPrevious();
+
+        const btn = document.getElementById('draw-btn');
+        btn.disabled = true;
+
+        if(gameState === 'init') {
+            gameState = 'starting';
+            for(let i=0; i<startBallsNum; i++) {
+                document.getElementById('round-info').innerText = `開局贈號 (${i+1}/${startBallsNum})`;
+                const n = await animateSlot();
+                record(n, 'start');
+                await new Promise(r => setTimeout(r, 600));
             }
+            gameState = 'rounds';
+            btn.innerText = `抽取第 1 回合`; btn.disabled = false;
+        } else if(gameState === 'rounds') {
+            roundCount++;
+            document.getElementById('round-info').innerText = `第 ${roundCount} / 6 回合`;
+            const n = await animateSlot();
+            record(n, 'round');
+            if(roundCount < 6) { btn.innerText = `抽取第 ${roundCount + 1} 回合`; btn.disabled = false; } 
+            else { btn.innerText = "抽球結束"; gameState = 'end'; }
         }
+    }
 
-        // 生成隨機碼
-        function generateRandomCode() {
-            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            const length = Math.floor(Math.random() * 4) + 5; 
-            let result = '';
-            for (let i = 0; i < length; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
-            codeInput.value = result; validateInput();
+    function record(num, type) {
+        drawnNumbers.add(num);
+        const ball = document.createElement('div');
+        ball.className = `ball ball-${type}`; ball.innerText = num;
+        document.getElementById(type === 'start' ? 'list-start' : 'list-round').appendChild(ball);
+        
+        const cell = document.getElementById(`cell-${num}`);
+        if(cell && !cell.classList.contains('hit')) {
+            cell.classList.add('suggested'); // 開始閃爍，等待玩家點擊或下一次抽球自動補點
         }
+        updateBingoStatus();
+    }
 
-        window.onload = generateRandomCode;
-
-        // --- 同步核心邏輯 (Mulberry32 PRNG) ---
-        function seedRandom(seed) {
-            return function() {
-                let t = seed += 0x6D2B79F5;
-                t = Math.imul(t ^ t >>> 15, t | 1);
-                t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-                return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    function attemptHit(n) {
+        const cell = document.getElementById(`cell-${n}`);
+        if(drawnNumbers.has(n)) {
+            if(!cell.classList.contains('hit')) {
+                cell.classList.remove('suggested');
+                cell.classList.add('hit');
+                updateBingoStatus();
             }
+        } else {
+            cell.classList.add('shake');
+            setTimeout(() => cell.classList.remove('shake'), 250);
         }
+    }
 
-        let myRandom, syncPool = [], gameState = 'init', manualRounds = 0, totalStartBalls = 0;
-        const winLines = [];
+    async function animateSlot() {
+        const ctrl = document.getElementById('slot-ctrl');
+        const idx = Math.floor(myPrng() * syncPool.length);
+        const finalNum = syncPool.splice(idx, 1)[0];
+        let html = ''; for(let i=0; i<8; i++) html += `<div class="slot-num">${Math.floor(Math.random()*25)+1}</div>`;
+        html += `<div class="slot-num">${finalNum}</div>`;
+        ctrl.innerHTML = html; ctrl.style.transition = 'none'; ctrl.style.transform = 'translateY(0)';
+        await new Promise(r => setTimeout(r, 50));
+        ctrl.style.transition = 'transform 0.8s cubic-bezier(0.15, 0.85, 0.35, 1)';
+        ctrl.style.transform = `translateY(-${8 * 70}px)`;
+        await new Promise(r => setTimeout(r, 850));
+        return finalNum;
+    }
 
-        function joinGame() {
-            const code = codeInput.value.trim();
-            if (code.length < 5) return;
-            let seed = 5381;
-            for (let i = 0; i < code.length; i++) { seed = ((seed << 5) + seed) + code.charCodeAt(i); }
-            myRandom = seedRandom(seed); 
-            syncPool = Array.from({length: 25}, (_, i) => i + 1);
-            totalStartBalls = Math.floor(myRandom() * 3) + 4;
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            document.getElementById('room-display').innerText = `目前房間碼：${code}`;
-            initBingoCard(); initWinLines();
-        }
-
-        async function handleDrawClick() {
-            const btn = document.getElementById('draw-btn'); btn.disabled = true;
-            if (gameState === 'init') {
-                gameState = 'starting';
-                for (let i = 0; i < totalStartBalls; i++) {
-                    document.getElementById('round-info').innerText = `📡 同步抽號 (${i+1}/${totalStartBalls})`;
-                    const num = await drawSyncNumber(); addHistoryBall(num, 'ball-start');
-                    await new Promise(r => setTimeout(r, 400));
-                }
-                gameState = 'manual'; btn.innerText = `抽取第 1 輪 (共6輪)`; btn.disabled = false;
-                document.getElementById('round-info').innerText = `請點擊抽取 6 輪號碼`;
-            } else if (gameState === 'manual') {
-                manualRounds++;
-                document.getElementById('round-info').innerText = `正式回合：第 ${manualRounds} / 6`;
-                const num = await drawSyncNumber(); addHistoryBall(num, 'ball-round');
-                if (manualRounds < 6) { btn.disabled = false; btn.innerText = `抽取第 ${manualRounds + 1} 輪`; }
-                else { btn.innerText = "本局抽號結束"; gameState = 'finished'; }
+    function updateBingoStatus() {
+        const cells = document.querySelectorAll('.cell');
+        const lines = [[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],[0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],[0,6,12,18,24],[4,8,12,16,20]];
+        let bCount = 0; let readySet = new Set();
+        lines.forEach(l => {
+            const hitIndices = l.filter(idx => cells[idx].classList.contains('hit'));
+            if (hitIndices.length === 5) bCount++;
+            else if (hitIndices.length === 4) {
+                const missIdx = l.find(idx => !cells[idx].classList.contains('hit'));
+                const val = cells[missIdx].dataset.val;
+                if (val !== "0") readySet.add(val);
             }
-        }
-
-        function drawSyncNumber() {
-            return new Promise(resolve => {
-                const container = document.getElementById('slot-container'); const steps = 12;
-                const idx = Math.floor(myRandom() * syncPool.length); const finalNum = syncPool.splice(idx, 1)[0];
-                let animNums = Array.from({length: steps}, () => Math.floor(Math.random() * 25) + 1);
-                animNums[steps - 1] = finalNum;
-                container.innerHTML = animNums.map(n => `<div class="slot-number">${n}</div>`).join('');
-                container.style.transition = 'none'; container.style.transform = 'translateY(0)';
-                let cur = 0; const timer = setInterval(() => {
-                    cur++; if (cur < steps) container.style.transform = `translateY(-${cur * 90}px)`;
-                    else { clearInterval(timer); resolve(finalNum); }
-                }, 60);
-            });
-        }
-
-        function addHistoryBall(num, cls) {
-            const b = document.createElement('div'); b.className = `ball ${cls}`; b.innerText = num;
-            document.getElementById('history-box').prepend(b); 
-        }
-
-        // --- Bingo 判定與特效 ---
-        function initBingoCard() {
-            const grid = document.getElementById('bingo-grid'); grid.innerHTML = '';
-            let nums = Array.from({length: 25}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
-            for (let i = 0; i < 25; i++) {
-                const cell = document.createElement('div'); cell.className = 'cell';
-                if (i === 12) { cell.innerText = 'FREE'; cell.classList.add('hit', 'free'); }
-                else {
-                    cell.innerText = nums.pop();
-                    cell.onclick = function() { this.classList.toggle('hit'); checkBingo(); };
-                }
-                grid.appendChild(cell);
-            }
-        }
-
-        function initWinLines() {
-            winLines.length = 0;
-            for (let i = 0; i < 5; i++) winLines.push([i*5, i*5+1, i*5+2, i*5+3, i*5+4], [i, i+5, i+10, i+15, i+20]);
-            winLines.push([0, 6, 12, 18, 24], [4, 8, 12, 16, 20]);
-        }
-
-        // 用於紀錄上次的 Bingo 數量，防止重複觸發特效
-        let lastBingoCount = 0;
-
-        function checkBingo() {
-            const cells = document.querySelectorAll('.cell'); const statusBar = document.getElementById('status-bar');
-            let bCount = 0; let readyNums = new Set(); let readyIndices = new Set();
-            
-            // 重置聽牌格子的視覺提示
-            cells.forEach(c => c.classList.remove('ready-cell'));
-
-            winLines.forEach(line => {
-                const hits = line.filter(idx => cells[idx].classList.contains('hit'));
-                if (hits.length === 5) bCount++;
-                else if (hits.length === 4) {
-                    const missIdx = line.find(idx => !cells[idx].classList.contains('hit'));
-                    readyNums.add(cells[missIdx].innerText);
-                    readyIndices.add(missIdx);
-                }
-            });
-
-            if (bCount > 0) {
-                // 如果 Bingo 數量增加，觸發華麗閃爍特效
-                if (bCount > lastBingoCount) { triggerBingoEffect(); }
-                lastBingoCount = bCount;
-
-                statusBar.innerText = `💰🏆 BINGO! 已達成 ${bCount} 條連線！`; statusBar.className = "status-bingo";
-            } else if (readyNums.size > 0) {
-                lastBingoCount = 0;
-                // 將聽牌號碼對應的格子高亮顯示
-                readyIndices.forEach(idx => cells[idx].classList.add('ready-cell'));
-                statusBar.innerText = `⚡ 聽牌：${Array.from(readyNums).join(', ')}`; statusBar.className = "status-ready";
-            } else {
-                lastBingoCount = 0; statusBar.innerText = "點擊號碼標記"; statusBar.className = "";
-            }
-        }
-
-        // 觸發滿版閃爍特效
-        function triggerBingoEffect() {
-            bingoOverlay.style.display = 'flex';
-            // 特效結束後隱藏，以便下次觸發
-            setTimeout(() => { bingoOverlay.style.display = 'none'; }, 1500);
-        }
-    </script>
+        });
+        const box = document.getElementById('status-box');
+        const text = document.getElementById('status-text');
+        box.className = "bingo-status-box";
+        if (bCount > 0) { box.classList.add('status-bingo'); text.innerHTML = `🎉 恭喜！達成 ${bCount} 條連線！`; }
+        else if (readySet.size > 0) { box.classList.add('status-ready'); text.innerHTML = `⚡ 聽牌：[ ${Array.from(readySet).sort((a,b)=>a-b).join(', ')} ]`; }
+        else { text.innerText = drawnNumbers.size > 0 ? "收集號碼中..." : "等待開局中..."; }
+    }
+    window.onload = generateRandomSeed;
+</script>
 </body>
 </html>
