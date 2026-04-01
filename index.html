@@ -2,8 +2,8 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Casino Pro - 智慧補點版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Casino Bingo - Multi-Device Pro</title>
     <style>
         :root {
             --casino-gold: #f1c40f;
@@ -12,105 +12,160 @@
             --casino-bg: #1a1a1a;
             --cell-bg: #2c3e50;
             --text-light: #ecf0f1;
-            --cell-size: min(17vw, 65px);
+            /* 核心優化：根據螢幕寬度與高度的最短邊來決定格子大小，防止溢出 */
+            --cell-size: clamp(42px, 16vmin, 65px);
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
             background-color: var(--casino-bg);
-            background-image: radial-gradient(circle, #3d0000 0%, #1a1a1a 70%);
+            background-image: radial-gradient(circle, #3d0000 0%, #1a1a1a 100%);
             color: var(--text-light);
+            margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
-            padding: 10px; margin: 0; min-height: 100vh; overflow-x: hidden;
+            min-height: 100vh; min-height: 100dvh;
+            overflow-x: hidden;
         }
 
-        .container { width: 100%; max-width: 450px; text-align: center; }
-        .header { margin: 10px 0; }
-        h1 { color: var(--casino-gold); text-transform: uppercase; text-shadow: 0 0 15px rgba(241, 196, 15, 0.7); margin: 0; font-size: 1.6em; }
-        .subtitle { font-size: 0.75em; color: var(--casino-gold); letter-spacing: 1px; opacity: 0.8; font-weight: bold; }
+        .container { 
+            width: 100%; 
+            max-width: 500px; 
+            padding: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; /* 緊湊佈局 */
+            align-items: center;
+        }
+        
+        .header { margin-top: 5px; text-align: center; }
+        h1 { color: var(--casino-gold); margin: 0; font-size: 1.4em; text-transform: uppercase; text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+        .subtitle { font-size: 0.65em; color: var(--casino-gold); opacity: 0.7; font-weight: bold; letter-spacing: 1px; }
 
-        /* Setup */
-        .setup-box { background: rgba(0,0,0,0.8); padding: 25px; border-radius: 20px; border: 2px solid var(--casino-dark-gold); margin-top: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        /* Setup Screen */
+        .setup-box { 
+            background: rgba(0,0,0,0.8); padding: 20px; border-radius: 20px; 
+            border: 2px solid var(--casino-dark-gold); margin-top: 15px; width: 95%;
+        }
         input { 
-            padding: 15px; border-radius: 10px; width: 100%; font-size: 22px; 
+            padding: 12px; border-radius: 10px; width: 100%; font-size: 20px; 
             text-align: center; background: #222; color: var(--casino-gold); 
-            border: 1px solid var(--casino-dark-gold); font-weight: bold; box-sizing: border-box;
+            border: 1px solid var(--casino-dark-gold); font-weight: bold;
         }
-        .refresh-btn { margin: 15px 0; color: var(--casino-gold); cursor: pointer; font-size: 0.9em; text-decoration: underline; }
 
         /* Game Panel */
-        .sync-panel { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #444; }
-        .slot-machine { background: #000; border: 3px solid var(--casino-dark-gold); border-radius: 10px; width: 100px; height: 70px; margin: 10px auto; overflow: hidden; position: relative; }
-        .slot-container { position: absolute; width: 100%; transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
-        .slot-num { font-size: 45px; line-height: 70px; font-weight: bold; color: var(--casino-gold); height: 70px; }
+        .sync-panel { 
+            background: rgba(0,0,0,0.4); padding: 10px; border-radius: 15px; 
+            border: 1px solid #444; width: 100%; display: flex; flex-direction: column; align-items: center;
+        }
+        .slot-machine { 
+            background: #000; border: 2px solid var(--casino-dark-gold); border-radius: 8px; 
+            width: 90px; height: 50px; margin: 5px auto; overflow: hidden; position: relative; 
+        }
+        .slot-num { font-size: 32px; line-height: 50px; font-weight: bold; color: var(--casino-gold); height: 50px; }
 
         /* History */
-        .history-section { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; text-align: left; }
-        .history-row { background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 10px; min-height: 45px; border-left: 4px solid transparent; }
+        .history-section { width: 100%; display: flex; flex-direction: column; gap: 5px; text-align: left; }
+        .history-row { background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 10px; border-left: 3px solid transparent; min-height: 40px; }
         .row-start { border-left-color: var(--casino-gold); }
         .row-round { border-left-color: var(--casino-red); }
-        .history-label { font-size: 0.65em; color: var(--casino-gold); margin-bottom: 4px; font-weight: bold; text-transform: uppercase; }
-        .ball-list { display: flex; flex-wrap: wrap; gap: 6px; }
-        .ball { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; animation: pop 0.3s ease-out; }
-        .ball-start { background: var(--casino-gold); color: #000; box-shadow: 0 0 8px var(--casino-gold); }
-        .ball-round { background: var(--casino-red); color: #fff; box-shadow: 0 0 8px var(--casino-red); }
+        .history-label { font-size: 0.6em; color: var(--casino-gold); margin-bottom: 2px; font-weight: bold; }
+        .ball-list { display: flex; flex-wrap: wrap; gap: 4px; }
+        .ball { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; animation: pop 0.3s ease-out; }
+        .ball-start { background: var(--casino-gold); color: #000; }
+        .ball-round { background: var(--casino-red); color: #fff; }
 
-        /* Grid */
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 10px; background: rgba(0,0,0,0.6); border-radius: 15px; border: 2px solid var(--casino-dark-gold); }
-        .cell { width: var(--cell-size); height: var(--cell-size); background: var(--cell-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: calc(var(--cell-size) * 0.4); font-weight: bold; cursor: not-allowed; color: #444; transition: all 0.3s; border: 1px solid #333; }
+        /* Bingo Grid */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: clamp(4px, 1vmin, 8px); 
+            padding: 8px; 
+            background: rgba(0,0,0,0.6); 
+            border-radius: 12px; 
+            border: 2px solid var(--casino-dark-gold);
+        }
+        .cell { 
+            width: var(--cell-size); 
+            height: var(--cell-size); 
+            background: var(--cell-bg); 
+            border-radius: 6px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: calc(var(--cell-size) * 0.38); 
+            font-weight: bold; 
+            color: #444; 
+            transition: 0.2s; 
+            border: 1px solid #333;
+        }
         .cell.suggested { cursor: pointer; color: #fff; border: 2px solid var(--casino-gold); animation: breathe 1.5s infinite; }
-        .cell.hit { background: linear-gradient(145deg, var(--casino-red), #961e12); color: white; border: none; cursor: default; transform: scale(1); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .cell.free { background: #111; color: #aaa; font-size: 10px; cursor: default; }
+        .cell.hit { background: linear-gradient(145deg, var(--casino-red), #961e12); color: white; border: none; box-shadow: inset 0 0 8px rgba(0,0,0,0.5); }
+        .cell.free { background: #111; color: #aaa; font-size: 0.6em; }
 
         /* Status Box */
-        .bingo-status-box { margin-top: 15px; padding: 15px; border-radius: 10px; background: rgba(0,0,0,0.5); border: 1px solid #444; min-height: 60px; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s ease; }
-        .status-text { font-size: 1em; line-height: 1.4; color: #888; text-align: center; }
+        .bingo-status-box { 
+            width: 100%; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.5); 
+            border: 1px solid #444; min-height: 54px; display: flex; 
+            align-items: center; justify-content: center; font-weight: bold;
+        }
+        .status-text { font-size: 0.9em; line-height: 1.3; color: #888; text-align: center; }
         .status-ready { border-color: var(--casino-gold); background: rgba(241, 196, 15, 0.1); }
         .status-ready .status-text { color: var(--casino-gold); }
         .status-bingo { border-color: var(--casino-red); background: rgba(231, 76, 60, 0.2); animation: winPulse 1s infinite alternate; }
         .status-bingo .status-text { color: #fff; }
 
-        @keyframes breathe { 0% { box-shadow: 0 0 5px var(--casino-gold); transform: scale(1); } 50% { box-shadow: 0 0 15px var(--casino-gold); transform: scale(1.05); } 100% { box-shadow: 0 0 5px var(--casino-gold); transform: scale(1); } }
+        @keyframes breathe { 0%, 100% { box-shadow: 0 0 5px var(--casino-gold); transform: scale(1); } 50% { box-shadow: 0 0 12px var(--casino-gold); transform: scale(1.03); } }
         @keyframes winPulse { from { box-shadow: 0 0 5px var(--casino-red); } to { box-shadow: 0 0 20px var(--casino-red); } }
         @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
         .shake { animation: shake 0.2s; border-color: var(--casino-red) !important; }
-        .btn-main { padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 50px; border: none; background: linear-gradient(145deg, var(--casino-gold), var(--casino-dark-gold)); cursor: pointer; color: #222; }
-        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+        .btn-main { 
+            padding: 12px 24px; font-size: 17px; font-weight: bold; border-radius: 50px; 
+            border: none; background: linear-gradient(145deg, var(--casino-gold), var(--casino-dark-gold)); 
+            cursor: pointer; color: #222; width: 100%; max-width: 280px; margin-top: 5px;
+        }
+        .btn-main:disabled { opacity: 0.5; filter: grayscale(1); }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header"><h1>Casino Bingo</h1><div class="subtitle">- Smart Sync Pro -</div></div>
+    <div class="header">
+        <h1>Casino Bingo</h1>
+        <div class="subtitle">Smart Sync Pro</div>
+    </div>
 
     <div id="setup-screen" class="setup-box">
-        <input type="text" id="seed-input" placeholder="房間代碼..." maxlength="8" oninput="validateInput()">
-        <div id="len-hint" style="font-size: 0.75em; color: #888; margin-top: 10px;">請輸入 4-8 位英數代碼</div>
-        <div class="refresh-btn" onclick="generateRandomSeed()">🔄 隨機生成</div>
-        <button id="join-btn" class="btn-main" onclick="initGame()" disabled>✨ 進入同步房間</button>
+        <input type="text" id="seed-input" placeholder="房間代碼 (4-8位)" maxlength="8" oninput="validateInput()">
+        <button id="join-btn" class="btn-main" style="margin-top:20px" onclick="initGame()" disabled>✨ 進入同步房間</button>
+        <div style="margin-top:15px; color:var(--casino-gold); cursor:pointer; font-size:0.8em; text-decoration:underline" onclick="generateRandomSeed()">🔄 隨機生成代碼</div>
     </div>
 
     <div id="game-screen" class="hidden">
         <div class="sync-panel">
-            <div id="round-info" style="font-size: 0.8em; margin-bottom:5px; color:#aaa;">準備就緒</div>
+            <div id="round-info" style="font-size: 0.7em; margin-bottom:3px; color:#aaa;">準備就緒</div>
             <div class="slot-machine"><div class="slot-container" id="slot-ctrl"><div class="slot-num">?</div></div></div>
             <button id="draw-btn" class="btn-main" onclick="handleDraw()">🚀 抽取下一個號碼</button>
         </div>
 
         <div class="history-section">
-            <div class="history-row row-start"><div class="history-label">● 初始同步 (Start)</div><div class="ball-list" id="list-start"></div></div>
-            <div class="history-row row-round"><div class="history-label">● 正式回合 (Rounds)</div><div class="ball-list" id="list-round"></div></div>
+            <div class="history-row row-start"><div class="history-label">● Start</div><div class="ball-list" id="list-start"></div></div>
+            <div class="history-row row-round"><div class="history-label">● Rounds</div><div class="ball-list" id="list-round"></div></div>
         </div>
 
         <div class="grid" id="bingo-grid"></div>
         <div class="bingo-status-box" id="status-box"><div class="status-text" id="status-text">等待開局中...</div></div>
-        <button style="background:none; border:none; color:#666; text-decoration:underline; cursor:pointer; margin:25px 0;" onclick="location.reload()">🚪 離開房間</button>
+        
+        <div style="margin: 10px 0 20px 0; font-size: 0.8em; color: #555; text-decoration: underline; cursor:pointer;" onclick="location.reload()">🚪 離開遊戲</div>
     </div>
 </div>
 
 <script>
+    // [邏輯核心保持不變]
     function seedRandom(s) { return function() { s = Math.imul(s ^ s >>> 15, s | 1); s ^= s + Math.imul(s ^ s >>> 7, s | 61); return ((s ^ s >>> 14) >>> 0) / 4294967296; }; }
     let myPrng, syncPool = [], drawnNumbers = new Set();
     let gameState = 'init', roundCount = 0, startBallsNum = 0;
@@ -154,21 +209,14 @@
         updateBingoStatus();
     }
 
-    // --- 關鍵邏輯：自動補點檢查 ---
     function autoHitPrevious() {
-        // 找出所有正在閃爍（suggested）但還沒變紅（hit）的格子，強制變紅
         const suggestedCells = document.querySelectorAll('.cell.suggested');
-        suggestedCells.forEach(cell => {
-            cell.classList.remove('suggested');
-            cell.classList.add('hit');
-        });
+        suggestedCells.forEach(cell => { cell.classList.remove('suggested'); cell.classList.add('hit'); });
         updateBingoStatus();
     }
 
     async function handleDraw() {
-        // 1. 抽取新號碼前，先把舊的「補點」點亮
         autoHitPrevious();
-
         const btn = document.getElementById('draw-btn');
         btn.disabled = true;
 
@@ -197,11 +245,8 @@
         const ball = document.createElement('div');
         ball.className = `ball ball-${type}`; ball.innerText = num;
         document.getElementById(type === 'start' ? 'list-start' : 'list-round').appendChild(ball);
-        
         const cell = document.getElementById(`cell-${num}`);
-        if(cell && !cell.classList.contains('hit')) {
-            cell.classList.add('suggested'); // 開始閃爍，等待玩家點擊或下一次抽球自動補點
-        }
+        if(cell && !cell.classList.contains('hit')) cell.classList.add('suggested');
         updateBingoStatus();
     }
 
@@ -228,7 +273,7 @@
         ctrl.innerHTML = html; ctrl.style.transition = 'none'; ctrl.style.transform = 'translateY(0)';
         await new Promise(r => setTimeout(r, 50));
         ctrl.style.transition = 'transform 0.8s cubic-bezier(0.15, 0.85, 0.35, 1)';
-        ctrl.style.transform = `translateY(-${8 * 70}px)`;
+        ctrl.style.transform = `translateY(-${8 * 50}px)`; // 配合老虎機高度優化
         await new Promise(r => setTimeout(r, 850));
         return finalNum;
     }
@@ -251,7 +296,7 @@
         box.className = "bingo-status-box";
         if (bCount > 0) { box.classList.add('status-bingo'); text.innerHTML = `🎉 恭喜！達成 ${bCount} 條連線！`; }
         else if (readySet.size > 0) { box.classList.add('status-ready'); text.innerHTML = `⚡ 聽牌：[ ${Array.from(readySet).sort((a,b)=>a-b).join(', ')} ]`; }
-        else { text.innerText = drawnNumbers.size > 0 ? "收集號碼中..." : "等待開局中..."; }
+        else { text.innerText = drawnNumbers.size > 0 ? "收集號碼中，加油！" : "等待開局中..."; }
     }
     window.onload = generateRandomSeed;
 </script>
